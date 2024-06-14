@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TasksModule } from './tasks/tasks.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './tasks/task.entity';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 //Decorador que define el modulo principal de la aplicación
 @Module({
@@ -19,4 +20,10 @@ import { Task } from './tasks/task.entity';
     TasksModule, //Modulo de tareas
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*'); //Ruta de las tareas
+  }
+}
